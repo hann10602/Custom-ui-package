@@ -2,10 +2,6 @@ import { Dayjs } from "dayjs";
 import { memo } from "react";
 import { MdArrowBackIosNew, MdOutlineArrowForwardIos } from "react-icons/md";
 import { DaysType } from "../../../types/datepicker.type";
-import {
-  Action,
-  useDateModalContext,
-} from "../../../context/dateModalProvider";
 
 type Props = {
   handleChangeToPreviousMonth: () => void;
@@ -30,8 +26,6 @@ const Calendar = ({
   handleOnMouseOverDay,
   handleSelectedToday,
 }: Props) => {
-  const { selectedModalDispatch } = useDateModalContext();
-
   const handleGetMonth = () => {
     switch (currentDate.month()) {
       case 0:
@@ -59,10 +53,6 @@ const Calendar = ({
       case 11:
         return "Dec";
     }
-  };
-
-  const handleChangeModal = (modal: Action) => {
-    selectedModalDispatch(modal);
   };
 
   return (
