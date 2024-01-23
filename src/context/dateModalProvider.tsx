@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from "react";
+import dayjs from "dayjs";
+import React, { createContext, useContext, useReducer, useState } from "react";
 
 type IDateModalProps = {
   children: React.ReactNode;
@@ -7,12 +8,13 @@ type IDateModalProps = {
 export type Action =
   | { type: "CALENDAR" }
   | { type: "MONTH" }
-  | { type: "YEAR" }
-  | { type: "DECADE" };
+  | { type: "YEAR" };
 
 type IDateModalContext = {
   selectedModal: string;
   selectedModalDispatch: React.Dispatch<Action>;
+  currentDate: dayjs.Dayjs;
+  setCurrentDate: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
 };
 
 const selectedModalReducer = (state: string, action: Action): string => {
@@ -23,8 +25,6 @@ const selectedModalReducer = (state: string, action: Action): string => {
       return "MONTH";
     case "YEAR":
       return "YEAR";
-    case "DECADE":
-      return "DECADE";
     default:
       return state;
   }
@@ -33,6 +33,8 @@ const selectedModalReducer = (state: string, action: Action): string => {
 const DateModalContext = createContext<IDateModalContext>({
   selectedModal: "CALENDAR",
   selectedModalDispatch: () => {},
+  currentDate: dayjs(),
+  setCurrentDate: () => {},
 });
 
 export const DateModalProvider = ({ children }: IDateModalProps) => {
@@ -41,11 +43,15 @@ export const DateModalProvider = ({ children }: IDateModalProps) => {
     "CALENDAR"
   );
 
+  const [currentDate, setCurrentDate] = useState<dayjs.Dayjs>(dayjs());
+
   return (
     <DateModalContext.Provider
       value={{
         selectedModal,
         selectedModalDispatch,
+        currentDate,
+        setCurrentDate,
       }}
     >
       {children}

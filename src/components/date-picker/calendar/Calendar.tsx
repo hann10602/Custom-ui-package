@@ -1,12 +1,16 @@
-import { Dayjs } from "dayjs";
-import { memo } from "react";
+import dayjs from "dayjs";
+import { memo, useMemo } from "react";
 import { MdArrowBackIosNew, MdOutlineArrowForwardIos } from "react-icons/md";
+import { months } from "../../../const/datepicker";
+import {
+  Action,
+  useDateModalContext,
+} from "../../../context/dateModalProvider";
 import { DaysType } from "../../../types/datepicker.type";
 
 type Props = {
   handleChangeToPreviousMonth: () => void;
   handleChangeToNextMonth: () => void;
-  currentDate: Dayjs;
   days: DaysType[];
   dateInput: string;
   handleOnMouseOutDay: () => void;
@@ -16,7 +20,6 @@ type Props = {
 };
 
 const Calendar = ({
-  currentDate,
   handleChangeToPreviousMonth,
   handleChangeToNextMonth,
   days,
@@ -26,46 +29,46 @@ const Calendar = ({
   handleOnMouseOverDay,
   handleSelectedToday,
 }: Props) => {
-  const handleGetMonth = () => {
-    switch (currentDate.month()) {
-      case 0:
-        return "Jan";
-      case 1:
-        return "Feb";
-      case 2:
-        return "Mar";
-      case 3:
-        return "Apr";
-      case 4:
-        return "May";
-      case 5:
-        return "Jun";
-      case 6:
-        return "Jul";
-      case 7:
-        return "Aug";
-      case 8:
-        return "Sep";
-      case 9:
-        return "Oct";
-      case 10:
-        return "Nov";
-      case 11:
-        return "Dec";
-    }
+  const { selectedModalDispatch, currentDate } = useDateModalContext();
+
+  const monthId = currentDate.month();
+
+  const currentMonth = useMemo(
+    () =>
+      months.filter((month) => {
+        if (monthId === month.id) {
+          return month.code;
+        }
+      }),
+    [monthId]
+  );
+
+  const handleChangeModal = (
+    event: React.MouseEvent<HTMLParagraphElement, MouseEvent>,
+    modal: Action
+  ) => {
+    event.stopPropagation();
+
+    selectedModalDispatch(modal);
   };
 
   return (
     <>
-      <div className="w-full flex justify-between items-center border border-solid border-gray-300 py-1">
+      <div className="w-full flex justify-between items-center py-1">
         <div onClick={handleChangeToPreviousMonth}>
           <MdArrowBackIosNew className="cursor-pointer w-8" />
         </div>
         <div className="flex items-center gap-x-1">
-          <p className="cursor-pointer font-semibold hover:text-blue-500">
-            {handleGetMonth()}
+          <p
+            onClick={(event) => handleChangeModal(event, { type: "MONTH" })}
+            className="cursor-pointer font-semibold hover:text-blue-500"
+          >
+            {currentMonth[0].code}
           </p>
-          <p className="cursor-pointer font-semibold hover:text-blue-500">
+          <p
+            onClick={(event) => handleChangeModal(event, { type: "YEAR" })}
+            className="cursor-pointer font-semibold hover:text-blue-500"
+          >
             {currentDate.year()}
           </p>
         </div>
@@ -73,7 +76,7 @@ const Calendar = ({
           <MdOutlineArrowForwardIos className="cursor-pointer w-8 flex justify-center" />
         </div>
       </div>
-      <div className="w-full grid grid-cols-7 gap-2 border border-solid border-gray-300 py-3 px-5">
+      <div className="w-full grid grid-cols-7 gap-2 border-y border-solid border-gray-300 py-3 px-5">
         <div className="flex justify-center items-center font-semibold">Su</div>
         <div className="flex justify-center items-center font-semibold">Mo</div>
         <div className="flex justify-center items-center font-semibold">Tu</div>
@@ -97,7 +100,7 @@ const Calendar = ({
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center border-x border-b border-solid border-gray-300 py-1 text-sm font-semibold">
+      <div className="flex justify-center items-center py-1 text-sm font-semibold">
         <p
           className="text-blue-600 cursor-pointer hover:text-blue-500 w-max"
           onClick={handleSelectedToday}
