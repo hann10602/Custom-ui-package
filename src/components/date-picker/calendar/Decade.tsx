@@ -5,9 +5,7 @@ import {
 } from "../../../context/dateModalProvider";
 import { MdArrowBackIosNew, MdOutlineArrowForwardIos } from "react-icons/md";
 
-type Props = {};
-
-const Decade = (props: Props) => {
+const Decade = () => {
   const { selectedModalDispatch, selectedDecade, setSelectedYear } =
     useDateModalContext();
 
