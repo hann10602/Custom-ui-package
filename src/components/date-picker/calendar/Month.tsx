@@ -37,8 +37,11 @@ const Month = ({ handleChangeDays }: Props) => {
 
   return (
     <>
-      <div className="flex justify-between">
-        <div onClick={handleChangeToPreviousYear}>
+      <div className="flex justify-between border-b border-solid border-gray-300 py-1">
+        <div
+          onClick={handleChangeToPreviousYear}
+          className=" flex items-center"
+        >
           <MdArrowBackIosNew className="cursor-pointer w-8" />
         </div>
         <div className="flex items-center gap-x-1">
@@ -49,20 +52,15 @@ const Month = ({ handleChangeDays }: Props) => {
             {currentYear}
           </p>
         </div>
-        <div onClick={handleChangeToNextYear}>
-          <MdOutlineArrowForwardIos className="cursor-pointer w-8 flex justify-center" />
+        <div onClick={handleChangeToNextYear} className=" flex items-center">
+          <MdOutlineArrowForwardIos className="cursor-pointer w-8" />
         </div>
       </div>
       <div className="grid grid-cols-3 p-5 gap-7">
         {months.map((month) => (
           <div
             key={month.id}
-            className={`${
-              month.id === currentDate.month() &&
-              currentYear === currentDate.year()
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-200 cursor-pointer"
-            } text-center rounded-lg px-3`}
+            className={`hover:bg-gray-200 cursor-pointer text-center rounded-lg px-3`}
             onClick={(e) => handleChangeDays(e, currentYear, month.id)}
           >
             {month.code}

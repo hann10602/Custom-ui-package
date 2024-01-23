@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { memo, useMemo } from "react";
 import { MdArrowBackIosNew, MdOutlineArrowForwardIos } from "react-icons/md";
 import { months } from "../../../const/datepicker";
@@ -29,7 +28,8 @@ const Calendar = ({
   handleOnMouseOverDay,
   handleSelectedToday,
 }: Props) => {
-  const { selectedModalDispatch, currentDate } = useDateModalContext();
+  const { selectedModalDispatch, currentDate, setSelectedYear } =
+    useDateModalContext();
 
   const monthId = currentDate.month();
 
@@ -49,6 +49,7 @@ const Calendar = ({
   ) => {
     event.stopPropagation();
 
+    setSelectedYear(currentDate.year());
     selectedModalDispatch(modal);
   };
 
@@ -76,7 +77,7 @@ const Calendar = ({
           <MdOutlineArrowForwardIos className="cursor-pointer w-8 flex justify-center" />
         </div>
       </div>
-      <div className="w-full grid grid-cols-7 gap-2 border-y border-solid border-gray-300 py-3 px-5">
+      <div className="w-full grid grid-cols-7 border-y border-solid border-gray-300 py-3 px-5">
         <div className="flex justify-center items-center font-semibold">Su</div>
         <div className="flex justify-center items-center font-semibold">Mo</div>
         <div className="flex justify-center items-center font-semibold">Tu</div>
@@ -90,7 +91,7 @@ const Calendar = ({
               dateInput === day.date && day.type === "current"
                 ? "border border-solid border-blue-600"
                 : "hover:bg-gray-200"
-            } w-8 h-8 flex justify-center rounded-md items-center cursor-pointer`}
+            } w-9 h-9 flex justify-center items-center cursor-pointer`}
             key={day.type === "current" ? day.day : day.day + 40}
             onClick={() => handleChangeSelectedDate(day.date)}
             onMouseOver={() => handleOnMouseOverDay(day.date)}

@@ -9,6 +9,7 @@ import { DaysType } from "../../types/datepicker.type";
 import Calendar from "./calendar";
 import Month from "./calendar/Month";
 import Year from "./calendar/Year";
+import Decade from "./calendar/Decade";
 
 type Props = {};
 
@@ -97,12 +98,28 @@ const DatePicker = ({}: Props) => {
     month: number
   ) => {
     e.stopPropagation();
+    const formatMonth = (month + 1).toString();
+
     setDays(
       handleGetSelectedCalendar(
-        dayjs(`${year}-0${month + 1}-01`, dateFormat, true)
+        dayjs(
+          `${year}-${
+            formatMonth.length === 1 ? `0${formatMonth}` : formatMonth
+          }-01`,
+          dateFormat,
+          true
+        )
       )
     );
-    setCurrentDate(dayjs(`${year}-0${month + 1}-01`, dateFormat, true));
+    setCurrentDate(
+      dayjs(
+        `${year}-${
+          formatMonth.length === 1 ? `0${formatMonth}` : formatMonth
+        }-01`,
+        dateFormat,
+        true
+      )
+    );
     selectedModalDispatch({ type: "CALENDAR" });
   };
 
@@ -240,6 +257,7 @@ const DatePicker = ({}: Props) => {
             <Month handleChangeDays={handleChangeDays} />
           )}
           {selectedModal === "YEAR" && <Year />}
+          {selectedModal === "DECADE" && <Decade />}
         </div>
       )}
     </div>
