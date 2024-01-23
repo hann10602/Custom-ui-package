@@ -4,8 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import { IoCloseCircle } from "react-icons/io5";
 import { dateFormat } from "../../const/datepicker";
+import { useDateModalContext } from "../../context/dateModalProvider";
 import { DaysType } from "../../types/datepicker.type";
-import Calendar, { ChildMethodType } from "./Calendar";
+import Calendar from "./calendar";
+import Decade from "./calendar/Decade";
+import Month from "./calendar/Month";
+import Year from "./calendar/Year";
 
 type Props = {};
 
@@ -15,12 +19,14 @@ const DatePicker = ({}: Props) => {
   const [hoverDate, setHoverDate] = useState<string | undefined>(undefined);
   const [dateInput, setDateInput] = useState<string>("");
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
   const [isMouseOnInput, setIsMouseOnInput] = useState<boolean>(false);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [days, setDays] = useState<DaysType[]>([]);
 
+  const { selectedModal, selectedModalDispatch } = useDateModalContext();
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const calendarRef = useRef<ChildMethodType>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleGetSelectedCalendar = (selectedDate: dayjs.Dayjs) => {
     let lastDaysInPreviousMonth = selectedDate
@@ -98,12 +104,14 @@ const DatePicker = ({}: Props) => {
   const handleTriggerInput = () => {
     inputRef.current?.focus();
     setIsFocus(true);
-    setIsOpenCalendar(true);
+    setCurrentDate(dayjs());
+    setIsOpenModal(true);
+    selectedModalDispatch({ type: "CALENDAR" });
   };
 
   const handleChangeSelectedDate = (date: string) => {
     setDateInput(date);
-    setIsOpenCalendar(false);
+    setIsOpenModal(false);
     setHoverDate(undefined);
     setCurrentDate(dayjs(date, { format: dateFormat }));
   };
@@ -118,12 +126,12 @@ const DatePicker = ({}: Props) => {
 
   const handleClearDateInput = () => {
     setDateInput("");
-    setIsOpenCalendar(false);
+    setIsOpenModal(false);
   };
 
   const handleSelectedToday = () => {
     setDateInput(dayjs().format(dateFormat));
-    setIsOpenCalendar(false);
+    setIsOpenModal(false);
     setCurrentDate(dayjs());
   };
 
@@ -151,20 +159,18 @@ const DatePicker = ({}: Props) => {
   });
 
   useEffect(() => {
-    if (isOpenCalendar) {
+    if (isOpenModal) {
       const handleCheckClickPosition = (e: MouseEvent) => {
         if (
           !(
-            calendarRef.current &&
-            calendarRef.current.returnThis &&
+            modalRef.current &&
             inputRef.current &&
             (inputRef.current.contains((e.target as Node) || null) ||
-              calendarRef.current
-                .returnThis()
-                ?.contains((e.target as Node) || null))
+              modalRef.current.contains((e.target as Node) || null))
           )
         ) {
-          setIsOpenCalendar(false);
+          setIsOpenModal(false);
+        } else {
         }
       };
 
@@ -174,7 +180,7 @@ const DatePicker = ({}: Props) => {
         document.removeEventListener("click", handleCheckClickPosition);
       };
     }
-  });
+  }, [!selectedModal]);
 
   return (
     <div className="p-5 relative">
@@ -201,19 +207,25 @@ const DatePicker = ({}: Props) => {
           <FaCalendarAlt color="gray" />
         )}
       </div>
-      {isOpenCalendar && (
-        <Calendar
-          handleChangeToPreviousMonth={handleChangeToPreviousMonth}
-          handleChangeToNextMonth={handleChangeToNextMonth}
-          currentDate={currentDate}
-          days={days}
-          dateInput={dateInput}
-          handleOnMouseOutDay={handleOnMouseOutDay}
-          handleChangeSelectedDate={handleChangeSelectedDate}
-          handleOnMouseOverDay={handleOnMouseOverDay}
-          handleSelectedToday={handleSelectedToday}
-          ref={calendarRef}
-        />
+      {isOpenModal && (
+        <div ref={modalRef} className="absolute top-14">
+          {selectedModal === "CALENDAR" && (
+            <Calendar
+              handleChangeToPreviousMonth={handleChangeToPreviousMonth}
+              handleChangeToNextMonth={handleChangeToNextMonth}
+              currentDate={currentDate}
+              days={days}
+              dateInput={dateInput}
+              handleOnMouseOutDay={handleOnMouseOutDay}
+              handleChangeSelectedDate={handleChangeSelectedDate}
+              handleOnMouseOverDay={handleOnMouseOverDay}
+              handleSelectedToday={handleSelectedToday}
+            />
+          )}
+          {selectedModal === "MONTH" && <Month />}
+          {selectedModal === "YEAR" && <Year />}
+          {selectedModal === "DECADE" && <Decade />}
+        </div>
       )}
     </div>
   );
