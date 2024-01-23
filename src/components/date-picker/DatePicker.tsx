@@ -29,7 +29,6 @@ const DatePicker = ({}: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleGetSelectedCalendar = (selectedDate: dayjs.Dayjs) => {
-    console.log(selectedDate);
     let lastDaysInPreviousMonth = selectedDate
       .subtract(1, "month")
       .daysInMonth();
